@@ -94,7 +94,7 @@ export default function SummaryPage() {
           <AlertDescription>
             <p className="font-semibold mb-1">Waiting for host to finalize</p>
             <p className="text-sm text-muted-foreground">
-              The host is reviewing the bill. You'll be notified when payment info is ready.
+              The host is reviewing the bill. You&apos;ll be notified when payment info is ready.
             </p>
           </AlertDescription>
         </Alert>
@@ -163,7 +163,7 @@ export default function SummaryPage() {
               </>
             ) : (
               <p className="text-sm text-muted-foreground text-center py-4">
-                You haven't selected any items
+                You haven&apos;t selected any items
               </p>
             )}
           </CardContent>

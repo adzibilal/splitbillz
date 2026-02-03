@@ -201,7 +201,7 @@ export default function PaymentPage() {
                 Payment Confirmed
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                You're all set! Thanks for using Splitbillz.
+                You&apos;re all set! Thanks for using Splitbillz.
               </p>
             </CardContent>
           </Card>
