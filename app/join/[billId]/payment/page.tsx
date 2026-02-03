@@ -108,7 +108,7 @@ export default function PaymentPage() {
             <AlertDescription>
               <p className="font-semibold mb-1">Ready to pay</p>
               <p className="text-sm text-muted-foreground">
-                Transfer the amount below to the host's account
+                Transfer the amount below to the host&apos;s account
               </p>
             </AlertDescription>
           </Alert>

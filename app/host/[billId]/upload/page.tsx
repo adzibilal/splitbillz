@@ -44,7 +44,7 @@ export default function UploadReceiptPage() {
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-2">Upload Your Receipt</h2>
           <p className="text-muted-foreground">
-            Take a photo or upload an image of your receipt. We'll extract the items automatically.
+            Take a photo or upload an image of your receipt. We&apos;ll extract the items automatically.
           </p>
         </div>
 
