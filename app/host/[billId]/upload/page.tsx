@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { MobileHeader } from '@/components/mobile-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Upload, Camera, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -42,46 +43,32 @@ export default function UploadReceiptPage() {
 
       <div className="container max-w-md mx-auto px-4 py-6">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold mb-2">Upload Your Receipt</h2>
+          <div className="flex items-center gap-2 mb-2">
+            <h2 className="text-2xl font-bold">Upload Your Receipt</h2>
+            <Badge className="bg-amber-500">Coming Soon</Badge>
+          </div>
           <p className="text-muted-foreground">
-            Take a photo or upload an image of your receipt. We&apos;ll extract the items automatically.
+            Take a photo or upload an image of your receipt. Automatic OCR extraction is currently in development.
           </p>
         </div>
 
-        <Card className="border-2 border-dashed mb-4">
+        <Card className="border-2 border-dashed mb-4 opacity-60 grayscale pointer-events-none relative overflow-hidden">
+          <div className="absolute inset-0 bg-background/20 backdrop-blur-[1px] z-10 flex items-center justify-center">
+            <Badge variant="outline" className="bg-background text-lg py-1 px-4 border-2">Coming Soon</Badge>
+          </div>
           <CardContent className="p-8">
-            <label htmlFor="file-upload" className="cursor-pointer">
+            <label htmlFor="file-upload" className="cursor-not-allowed">
               <div className="flex flex-col items-center text-center">
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <Upload className="h-10 w-10 text-primary" />
                 </div>
                 <h3 className="font-semibold mb-2">
-                  {isUploading ? 'Processing...' : 'Tap to upload'}
+                  Upload Feature Coming Soon
                 </h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   PNG, JPG up to 10MB
                 </p>
-                <div className="flex gap-2">
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Camera className="h-4 w-4" />
-                    <span>Camera</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">or</span>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <FileText className="h-4 w-4" />
-                    <span>Gallery</span>
-                  </div>
-                </div>
               </div>
-              <input
-                id="file-upload"
-                type="file"
-                accept="image/*"
-                capture="environment"
-                className="hidden"
-                onChange={handleFileSelect}
-                disabled={isUploading}
-              />
             </label>
           </CardContent>
         </Card>
@@ -89,16 +76,14 @@ export default function UploadReceiptPage() {
         <div className="space-y-3">
           <Button
             size="lg"
-            variant="outline"
             className="w-full h-12"
             onClick={handleSkip}
-            disabled={isUploading}
           >
-            Skip & Enter Manually
+            Enter Items Manually
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
-            For demo purposes, OCR is simulated
+            Please enter your bill items manually while OCR is being improved
           </p>
         </div>
       </div>

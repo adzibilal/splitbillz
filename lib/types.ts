@@ -43,3 +43,42 @@ export interface BillWithDetails extends Bill {
   assignments: Assignment[];
   users: User[];
 }
+
+// --- Database Types (Supabase) ---
+
+export interface DbBill {
+  id: string;
+  host_id: string;
+  host_name: string;
+  restaurant_name: string | null;
+  status: string;
+  tax_service_rate: number;
+  payment_info: any;
+  created_at: string;
+}
+
+export interface DbItem {
+  id: string;
+  bill_id: string;
+  name: string;
+  price: number;
+  qty: number;
+  created_at: string;
+}
+
+export interface DbParticipant {
+  id: string;
+  bill_id: string;
+  user_id: string;
+  name: string;
+  has_paid: boolean;
+  joined_at: string;
+}
+
+export interface DbAssignment {
+  id: string;
+  item_id: string;
+  user_id: string;
+  quantity: number;
+  created_at: string;
+}

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useBill } from '@/context/bill-context';
-import { calculateUserTotal, calculateItemCostPerPerson } from '@/lib/dummy-data';
+import { calculateUserTotal, calculateItemCostPerPerson } from '@/lib/calculations';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { CheckCircle2, PartyPopper } from 'lucide-react';
@@ -20,7 +20,7 @@ export default function PaymentPage() {
   const billId = params.billId as string;
   const { getBillWithDetails, updatePaymentStatus, currentUserId, currentUserName } = useBill();
   const { toast } = useToast();
-  
+
   const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
   const [hasPaid, setHasPaid] = useState(false);
 
@@ -72,8 +72,8 @@ export default function PaymentPage() {
 
   const handleMarkAsPaid = () => {
     setHasPaid(true);
-    updatePaymentStatus(currentUserId, true);
-    
+    updatePaymentStatus(billId, currentUserId, true);
+
     toast({
       title: 'Payment confirmed!',
       description: 'Host has been notified',

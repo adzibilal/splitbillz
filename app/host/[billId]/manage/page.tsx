@@ -14,30 +14,41 @@ import { Button } from '@/components/ui/button';
 import { useBill } from '@/context/bill-context';
 import { Users, Share2, Check, X } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AssignmentDialog } from '@/components/assignment-dialog';
 
 export default function ManageBillPage() {
   const router = useRouter();
   const params = useParams();
   const billId = params.billId as string;
-  const { getBillWithDetails, updateBill } = useBill();
-  
-  const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
+  const { getBillWithDetails, updateBill, fetchBill, isLoading } = useBill();
 
   useEffect(() => {
-    const details = getBillWithDetails(billId);
-    setBillDetails(details);
-  }, [billId, getBillWithDetails]);
+    fetchBill(billId);
+  }, [billId, fetchBill]);
+
+  const billDetails = getBillWithDetails(billId);
+
+  if (isLoading && !billDetails) {
+    return (
+      <div className="min-h-screen bg-background p-4 space-y-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    );
+  }
 
   if (!billDetails) {
-    return <div>Bill not found</div>;
+    return <div className="p-4 text-center">Bill not found</div>;
   }
 
   const { items, assignments, users } = billDetails;
-  
-  const assignedItems = items.filter(item => 
+
+  const assignedItems = items.filter(item =>
     assignments.some(a => a.itemId === item.id)
   );
-  const unassignedItems = items.filter(item => 
+  const unassignedItems = items.filter(item =>
     !assignments.some(a => a.itemId === item.id)
   );
 
@@ -45,8 +56,8 @@ export default function ManageBillPage() {
   const taxAmount = subtotal * (billDetails.taxServiceRate / 100);
   const total = subtotal + taxAmount;
 
-  const handleLockBill = () => {
-    updateBill(billId, { status: 'REVIEW' });
+  const handleLockBill = async () => {
+    await updateBill(billId, { status: 'REVIEW' });
     router.push(`/host/${billId}/review`);
   };
 
@@ -158,6 +169,12 @@ export default function ManageBillPage() {
                   item={item}
                   assignments={assignments}
                   showAssignments
+                  actions={
+                    <AssignmentDialog
+                      item={item}
+                      billId={billId}
+                    />
+                  }
                 />
               ))}
             </div>
@@ -173,7 +190,16 @@ export default function ManageBillPage() {
             </div>
             <div className="space-y-2">
               {unassignedItems.map(item => (
-                <ItemCard key={item.id} item={item} />
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  actions={
+                    <AssignmentDialog
+                      item={item}
+                      billId={billId}
+                    />
+                  }
+                />
               ))}
             </div>
           </div>

@@ -7,6 +7,7 @@ interface ItemCardProps {
   item: Item;
   assignments?: Assignment[];
   showAssignments?: boolean;
+  actions?: React.ReactNode;
   children?: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ export function ItemCard({
   item,
   assignments = [],
   showAssignments = false,
+  actions,
   children,
 }: ItemCardProps) {
   const itemAssignments = assignments.filter(a => a.itemId === item.id);
@@ -51,7 +53,10 @@ export function ItemCard({
               </div>
             )}
           </div>
-          {children && <div className="flex-shrink-0">{children}</div>}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {actions}
+            {children}
+          </div>
         </div>
       </CardContent>
     </Card>

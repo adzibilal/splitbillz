@@ -9,7 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { useBill } from '@/context/bill-context';
-import { calculateUserTotal, calculateItemCostPerPerson } from '@/lib/dummy-data';
+import { calculateUserTotal, calculateItemCostPerPerson } from '@/lib/calculations';
 import { formatCurrency } from '@/lib/utils';
 import { Clock, RefreshCw, Users } from 'lucide-react';
 
@@ -18,7 +18,7 @@ export default function SummaryPage() {
   const params = useParams();
   const billId = params.billId as string;
   const { getBillWithDetails, currentUserId, currentUserName } = useBill();
-  
+
   const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -73,7 +73,7 @@ export default function SummaryPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <MobileHeader 
+      <MobileHeader
         title="Summary"
         rightAction={
           <Button

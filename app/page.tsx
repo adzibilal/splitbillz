@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Receipt, Users, Zap } from 'lucide-react';
 
 export default function HomePage() {
@@ -40,9 +41,12 @@ export default function HomePage() {
                 <Receipt className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold mb-1">Easy Splitting</h3>
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-semibold">Easy Splitting</h3>
+                  <Badge variant="secondary" className="text-[10px] h-4 px-1 bg-amber-100 text-amber-700 hover:bg-amber-100">Coming Soon</Badge>
+                </div>
                 <p className="text-sm text-muted-foreground">
-                  Upload receipt, share link, and let everyone pick their items
+                  Upload receipt and let everyone pick their items (OCR Coming Soon)
                 </p>
               </div>
             </CardContent>

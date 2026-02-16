@@ -17,15 +17,20 @@ export default function CreateBillPage() {
   const [restaurantName, setRestaurantName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!hostName.trim()) return;
 
     setIsCreating(true);
-    // Simulate async operation
-    setTimeout(() => {
-      const billId = createBill(hostName.trim(), restaurantName.trim() || undefined);
-      router.push(`/host/${billId}/upload`);
-    }, 500);
+    try {
+      const billId = await createBill(hostName.trim(), restaurantName.trim() || undefined);
+      if (billId) {
+        router.push(`/host/${billId}/edit`);
+      }
+    } catch (error) {
+      // Error handled in context toast
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (

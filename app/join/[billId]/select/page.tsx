@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useBill } from '@/context/bill-context';
-import { calculateItemCostPerPerson } from '@/lib/dummy-data';
+import { calculateItemCostPerPerson } from '@/lib/calculations';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { ShoppingCart, Info } from 'lucide-react';
@@ -18,15 +18,15 @@ export default function SelectItemsPage() {
   const router = useRouter();
   const params = useParams();
   const billId = params.billId as string;
-  const { 
-    getBillWithDetails, 
-    assignItem, 
-    unassignItem, 
-    currentUserId, 
-    currentUserName 
+  const {
+    getBillWithDetails,
+    assignItem,
+    unassignItem,
+    currentUserId,
+    currentUserName
   } = useBill();
   const { toast } = useToast();
-  
+
   const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
@@ -62,7 +62,7 @@ export default function SelectItemsPage() {
 
   const handleToggleItem = (itemId: string, selected: boolean) => {
     const newSelected = new Set(selectedItems);
-    
+
     if (selected) {
       newSelected.add(itemId);
       assignItem(itemId, currentUserId, currentUserName);
@@ -70,7 +70,7 @@ export default function SelectItemsPage() {
       newSelected.delete(itemId);
       unassignItem(itemId, currentUserId);
     }
-    
+
     setSelectedItems(newSelected);
   };
 

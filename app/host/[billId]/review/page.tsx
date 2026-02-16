@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { useBill } from '@/context/bill-context';
-import { calculateUserTotal } from '@/lib/dummy-data';
+import { calculateUserTotal } from '@/lib/calculations';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { Lock } from 'lucide-react';
@@ -22,7 +22,7 @@ export default function ReviewBillPage() {
   const billId = params.billId as string;
   const { getBillWithDetails, updateBill } = useBill();
   const { toast } = useToast();
-  
+
   const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
   const [bank, setBank] = useState('');
   const [account, setAccount] = useState('');
@@ -50,7 +50,7 @@ export default function ReviewBillPage() {
       .filter(a => a.userId === user.id)
       .map(a => items.find(i => i.id === a.itemId))
       .filter(Boolean);
-    
+
     return {
       user,
       ...totals,

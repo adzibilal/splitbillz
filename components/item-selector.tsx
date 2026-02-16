@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Item, Assignment } from '@/lib/types';
 import { formatCurrency } from '@/lib/utils';
-import { calculateItemCostPerPerson } from '@/lib/dummy-data';
+import { calculateItemCostPerPerson } from '@/lib/calculations';
 
 interface ItemSelectorProps {
   item: Item;
@@ -22,7 +22,7 @@ export function ItemSelector({
   onToggle,
 }: ItemSelectorProps) {
   const [checked, setChecked] = useState(isSelected);
-  
+
   useEffect(() => {
     setChecked(isSelected);
   }, [isSelected]);
@@ -39,9 +39,8 @@ export function ItemSelector({
 
   return (
     <Card
-      className={`cursor-pointer transition-colors ${
-        checked ? 'border-primary bg-primary/5' : ''
-      }`}
+      className={`cursor-pointer transition-colors ${checked ? 'border-primary bg-primary/5' : ''
+        }`}
       onClick={() => handleChange(!checked)}
     >
       <CardContent className="p-4">
