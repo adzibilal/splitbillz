@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { MobileHeader } from '@/components/mobile-header';
 import { BottomActionBar } from '@/components/bottom-action-bar';
 import { ItemSelector } from '@/components/item-selector';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -12,7 +13,7 @@ import { useBill } from '@/context/bill-context';
 import { calculateItemCostPerPerson } from '@/lib/calculations';
 import { formatCurrency } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { ShoppingCart, Info } from 'lucide-react';
+import { ShoppingCart, Info, Edit2, CheckCircle2 } from 'lucide-react';
 
 export default function SelectItemsPage() {
   const router = useRouter();
@@ -29,6 +30,8 @@ export default function SelectItemsPage() {
 
   const [billDetails, setBillDetails] = useState(getBillWithDetails(billId));
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const [isEditing, setIsEditing] = useState(false);
+  const [hasConfirmedOnce, setHasConfirmedOnce] = useState(false);
 
   useEffect(() => {
     // Redirect if no user set
@@ -45,6 +48,13 @@ export default function SelectItemsPage() {
     // Load previously selected items
     const userAssignments = details.assignments.filter(a => a.userId === currentUserId);
     setSelectedItems(new Set(userAssignments.map(a => a.itemId)));
+
+    // If they have assignments, show resume view first
+    if (userAssignments.length > 0 && !hasConfirmedOnce) {
+      setIsEditing(false);
+    } else if (userAssignments.length === 0) {
+      setIsEditing(true);
+    }
 
     // Check bill status
     if (details.status === 'REVIEW') {
@@ -94,16 +104,13 @@ export default function SelectItemsPage() {
       return;
     }
 
+    setHasConfirmedOnce(true);
+    setIsEditing(false);
+
     toast({
       title: 'Selection saved!',
-      description: 'Wait for host to finalize the bill',
+      description: 'Your choices are now registered',
     });
-
-    // In a real app, would wait for bill status to change
-    // For demo, just show a message
-    setTimeout(() => {
-      router.push(`/join/${billId}/summary`);
-    }, 1500);
   };
 
   return (
@@ -134,18 +141,55 @@ export default function SelectItemsPage() {
           </AlertDescription>
         </Alert>
 
-        {/* Items List */}
-        <div className="space-y-3 mb-4">
-          {items.map(item => (
-            <ItemSelector
-              key={item.id}
-              item={item}
-              assignments={assignments}
-              isSelected={selectedItems.has(item.id)}
-              onToggle={(selected) => handleToggleItem(item.id, selected)}
-            />
-          ))}
-        </div>
+        {/* Items List / Resume View */}
+        {!isEditing ? (
+          <div className="space-y-4">
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-6 text-center">
+              <CheckCircle2 className="h-12 w-12 text-primary mx-auto mb-3" />
+              <h3 className="text-xl font-bold mb-1">Items Selected!</h3>
+              <p className="text-muted-foreground text-sm">
+                The host is still finalizing the bill. You can edit your choices or wait for the next step.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground px-1">
+                Your Choices
+              </h4>
+              {items.filter(i => selectedItems.has(i.id)).map(item => (
+                <Card key={item.id} className="bg-secondary/20">
+                  <CardContent className="p-4 py-3 flex justify-between items-center">
+                    <span className="font-medium">{item.name}</span>
+                    <span className="text-sm font-semibold">
+                      {formatCurrency(calculateItemCostPerPerson(item, assignments))}
+                    </span>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              onClick={() => setIsEditing(true)}
+            >
+              <Edit2 className="h-4 w-4" />
+              Edit Selections
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-3 mb-4">
+            {items.map(item => (
+              <ItemSelector
+                key={item.id}
+                item={item}
+                assignments={assignments}
+                isSelected={selectedItems.has(item.id)}
+                onToggle={(selected) => handleToggleItem(item.id, selected)}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Summary Card */}
         {selectedItems.size > 0 && (
@@ -177,9 +221,9 @@ export default function SelectItemsPage() {
       </div>
 
       <BottomActionBar
-        primaryLabel="Confirm Selection"
-        onPrimaryAction={handleConfirm}
-        primaryDisabled={selectedItems.size === 0}
+        primaryLabel={isEditing ? "Confirm Selection" : "Go to Summary"}
+        onPrimaryAction={isEditing ? handleConfirm : () => router.push(`/join/${billId}/summary`)}
+        primaryDisabled={isEditing && selectedItems.size === 0}
         info={
           selectedItems.size > 0
             ? `${selectedItems.size} ${selectedItems.size === 1 ? 'item' : 'items'} selected • ${formatCurrency(total)}`
