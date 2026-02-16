@@ -49,7 +49,7 @@ export function AssignmentDialog({ item, billId, trigger }: AssignmentDialogProp
                 <DialogHeader>
                     <DialogTitle>Assign Item</DialogTitle>
                     <DialogDescription>
-                        Who is splitting "{item.name}"?
+                        Who is splitting &quot;{item.name}&quot;?
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
